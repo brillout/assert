@@ -1,0 +1,11 @@
+node_modules/
+
+# TypeScript build directory
+dist/
+# TypeScript build state
+tsconfig.tsbuildinfo
+
+npm-debug.log*
+yarn-error.log
+package-lock.json
+yarn.lock
