@@ -11,7 +11,7 @@ assert(false, {
 });
 ~~~
 
-Will print the following purposely verbose assertion error message:
+Will print the following (purposely) verbose assertion error message:
 
 ~~~
 [@brillout/assert] BEGIN
