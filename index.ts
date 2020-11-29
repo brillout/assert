@@ -1,6 +1,6 @@
 export { assert };
 
-function assert(condition: unknown, ...msgs: unknown[]): void {
+function assert(condition: unknown, ...msgs: unknown[]): asserts condition {
   if (condition) {
     return;
   }
