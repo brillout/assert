@@ -1,39 +1,52 @@
 export { assert };
+export { assertWarning };
+
+const prefix = "[@brillout/assert] ";
 
 function assert(condition: unknown, ...msgs: unknown[]): asserts condition {
   if (condition) {
     return;
   }
 
-  const prefix = "[@brillout/assert] ";
+  const errorMessage = createErrorMessage(msgs);
 
-  const BEGIN = `${prefix}BEGIN`;
-  const END = `${prefix}END`;
-  console.log(BEGIN);
-  msgs.forEach((thing: unknown) => {
-    log(thing);
-  });
-  console.log(END);
+  throw new Error(errorMessage);
+}
 
-  throw new Error(
-    `${prefix}Assertion failed. See messages printed between \`${BEGIN}\` and \`${END}\`.`
+function assertWarning(
+  condition: unknown,
+  ...msgs: unknown[]
+): asserts condition {
+  if (condition) {
+    return;
+  }
+
+  const errorMessage = createErrorMessage(msgs);
+
+  console.error(new Error(errorMessage));
+}
+
+function createErrorMessage(msgs: unknown[]): string {
+  let errorMessage = [`${prefix}Assertion failed.`, ...msgs.map(log)].join(
+    "\n\n"
   );
+
+  return errorMessage;
 }
 
 function log(thing: unknown): void {
+  const inspectOptions = {
+    depth: Infinity,
+    showHidden: true,
+    showProxy: true,
+    colors: true,
+    getters: true,
+  };
+
   if (isNodejs()) {
-    console.log(
-      require("util").inspect(thing, {
-        depth: Infinity,
-        showHidden: true,
-        showProxy: true,
-        colors: true,
-        getters: true,
-      })
-    );
+    return eval("require")("util").inspect(thing, inspectOptions);
   } else {
-    // Browser-side
-    console.dir(thing);
+    return require("browser-util-inspect")(thing, inspectOptions);
   }
 }
 
