@@ -13,10 +13,7 @@ function assert(condition: unknown, ...msgs: unknown[]): asserts condition {
   throw new Error(errorMessage);
 }
 
-function assertWarning(
-  condition: unknown,
-  ...msgs: unknown[]
-): asserts condition {
+function assertWarning(condition: unknown, ...msgs: unknown[]): void {
   if (condition) {
     return;
   }
