@@ -20,5 +20,9 @@
   "repository": "github:brillout/assert",
   "publishConfig": {
     "access": "public"
+  },
+  "dependencies": {
+    "browser-util-inspect": "^0.2.0",
+    "strip-ansi": "^6.0.0"
   }
 }

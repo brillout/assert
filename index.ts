@@ -1,22 +1,16 @@
 export { assert };
 export { assertWarning };
 
-const errorName = "[@brillout/assert] Assertion Failure.";
+const prefix = "[@brillout/assert] ";
 
 function assert(condition: unknown, ...msgs: unknown[]): asserts condition {
   if (condition) {
     return;
   }
 
-  if (isNodejs()) {
-    const errorMessage = createErrorMessage(msgs);
-    throw new Error(errorMessage);
-  } else {
-    if (msgs.length > 0) {
-      console.error(...msgs);
-    }
-    throw new Error(errorName);
-  }
+  const errorMessage = createErrorMessage(msgs);
+
+  throw new Error(errorMessage);
 }
 
 function assertWarning(condition: unknown, ...msgs: unknown[]): void {
@@ -24,24 +18,20 @@ function assertWarning(condition: unknown, ...msgs: unknown[]): void {
     return;
   }
 
-  if (isNodejs()) {
-    const errorMessage = createErrorMessage(msgs);
-    console.error(new Error(errorMessage));
-  } else {
-    if (msgs.length > 0) {
-      console.error(...msgs);
-    }
-    console.error(new Error(errorName));
-  }
+  const errorMessage = createErrorMessage(msgs);
+
+  console.error(new Error(errorMessage));
 }
 
 function createErrorMessage(msgs: unknown[]): string {
-  let errorMessage = [errorName, ...msgs.map(stringify)].join("\n\n");
+  let errorMessage = [`${prefix}Assertion failed.`, ...msgs.map(log)].join(
+    "\n\n"
+  );
 
   return errorMessage;
 }
 
-function stringify(thing: unknown): void {
+function log(thing: unknown): void {
   const inspectOptions = {
     depth: Infinity,
     showHidden: true,
@@ -50,7 +40,13 @@ function stringify(thing: unknown): void {
     getters: true,
   };
 
-  return eval("require")("util").inspect(thing, inspectOptions);
+  if (isNodejs()) {
+    return eval("require")("util").inspect(thing, inspectOptions);
+  } else {
+    const stripAnsi = require("strip-ansi");
+    const utilInspect = require("browser-util-inspect");
+    return stripAnsi(utilInspect(thing, inspectOptions));
+  }
 }
 
 function isNodejs(): boolean {
